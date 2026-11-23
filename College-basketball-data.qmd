@@ -1,0 +1,78 @@
+---
+title: "College Basketball Data"
+author: "Chris Ferrare"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+You can add options to executable code like this
+
+```{r}
+NCAA <- read.csv("~/Downloads/NCAA Tourney Data(Sheet1).csv")
+```
+
+```{r}
+NCAA$Seed.Group <- ifelse(NCAA$NCAA.Tournament.Seed %in% c(1, 2),
+                          "1 or 2 Seeds",
+                          ifelse(NCAA$NCAA.Tournament.Seed %in% c(15, 16),
+                                 "15 or 16 Seeds", NA))
+
+NCAA_filtered <- subset(NCAA, !is.na(Seed.Group))
+
+
+```
+```{r}
+ggplot(NCAA_filtered, aes(x = Seed.Group,
+                          y = Average.Starter.Height)) +
+  geom_boxplot() +
+  labs(title = "Average Starter Height: High vs. Low Seeds",
+       x = "NCAA Tournament Seed",
+       y = "Average Starter Height (inches)") +
+  theme_minimal()
+```
+```{r}
+library(dplyr)
+
+NCAA_filtered %>%
+  group_by(Seed.Group) %>%
+  summarise(
+    Mean = mean(Average.Starter.Height, na.rm = TRUE),
+    Median = median(Average.Starter.Height, na.rm = TRUE),
+    Q1 = quantile(Average.Starter.Height, 0.25, na.rm = TRUE),
+    Q3 = quantile(Average.Starter.Height, 0.75, na.rm = TRUE),
+    Minimum = min(Average.Starter.Height, na.rm = TRUE),
+    Maximum = max(Average.Starter.Height, na.rm = TRUE),
+    Standard_Deviation = sd(Average.Starter.Height, na.rm = TRUE),
+    IQR = IQR(Average.Starter.Height, na.rm = TRUE),
+    Count = n()
+  )
+```
+```{r}
+ggplot(NCAA_filtered, aes(x = Seed.Group,
+                          y = Average.Weight.of.Starting.Lineup)) +
+  geom_boxplot() +
+  labs(title = "Average Starter Weight: High vs. Low Seeds",
+       x = "NCAA Tournament Seed",
+       y = "Average Starter Weight (lbs)") +
+  theme_minimal()
+```
+```{r}
+NCAA_filtered %>%
+  group_by(Seed.Group) %>%
+  summarise(
+    Mean = mean(Average.Weight.of.Starting.Lineup, na.rm = TRUE),
+    Median = median(Average.Weight.of.Starting.Lineup, na.rm = TRUE),
+    Q1 = quantile(Average.Weight.of.Starting.Lineup, 0.25, na.rm = TRUE),
+    Q3 = quantile(Average.Weight.of.Starting.Lineup, 0.75, na.rm = TRUE),
+    Minimum = min(Average.Weight.of.Starting.Lineup, na.rm = TRUE),
+    Maximum = max(Average.Weight.of.Starting.Lineup, na.rm = TRUE),
+    Standard_Deviation = sd(Average.Weight.of.Starting.Lineup, na.rm = TRUE),
+    IQR = IQR(Average.Weight.of.Starting.Lineup, na.rm = TRUE),
+    Count = sum(!is.na(Average.Weight.of.Starting.Lineup))
+  )
+```
+
